@@ -62,7 +62,7 @@ router.post('/', authenticate, authorize('Admin', 'Librarian'), [
   body('isbn').trim().isLength({ min: 10 }).withMessage('Valid ISBN is required'),
   body('category').trim().isLength({ min: 1 }).withMessage('Category is required'),
   body('year').isInt({ min: 1000, max: new Date().getFullYear() }).withMessage('Valid year is required'),
-  body('fileUrl').optional().trim().isLength({ min: 1 }).withMessage('File URL is required'),
+  body('fileUrl').trim().isLength({ min: 1 }).withMessage('File URL is required'),
   body('fileType').isIn(['PDF', 'EPUB', 'Audio', 'Video']).withMessage('Valid file type is required'),
   body('totalCopies').isInt({ min: 1 }).withMessage('Total copies must be at least 1'),
 ], async (req, res) => {

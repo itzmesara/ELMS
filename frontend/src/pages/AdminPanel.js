@@ -104,7 +104,12 @@ const AdminPanel = () => {
       handleCloseDialog();
     } catch (error) {
       console.error('Error saving book:', error);
-      setBookError(error.response?.data?.message || 'Failed to save book');
+      const data = error.response?.data;
+      if (data?.errors) {
+        setBookError(data.errors.map(e => e.msg).join(', '));
+      } else {
+        setBookError(data?.message || 'Failed to save book');
+      }
     }
   };
 
