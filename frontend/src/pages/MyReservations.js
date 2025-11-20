@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Card, CardContent, Button, Box, Grid, Alert } from '@mui/material';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 
 const MyReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
   useEffect(() => {
     fetchMyReservations();
   }, []);
@@ -47,7 +47,9 @@ const MyReservations = () => {
             <Grid item xs={12} md={6} lg={4} key={reservation._id}>
               <Card>
                 <CardContent>
-                  <Typography variant="h6">{reservation.book.title}</Typography>
+                  <Typography variant="h6" component={Link} to="/catalog" sx={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
+                    {reservation.book.title}
+                  </Typography>
                   <Typography variant="subtitle1" color="text.secondary">
                     by {reservation.book.author}
                   </Typography>
@@ -72,6 +74,8 @@ const MyReservations = () => {
           ))}
         </Grid>
       )}
+
+
     </Container>
   );
 };

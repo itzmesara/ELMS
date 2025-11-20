@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Grid, Card, CardContent, TextField, Box, Chip, Button, IconButton } from '@mui/material';
+import { Container, Typography, Grid, Card, CardContent, TextField, Box, Chip, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { Favorite, FavoriteBorder } from '@mui/icons-material';
 import api from '../services/api';
 
@@ -8,6 +8,12 @@ const Catalog = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredBooks, setFilteredBooks] = useState([]);
   const [wishlist, setWishlist] = useState([]);
+  const [purchasedBooks, setPurchasedBooks] = useState(() => {
+    const saved = localStorage.getItem('purchasedBooks');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [buyDialogOpen, setBuyDialogOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState(null);
 
   useEffect(() => {
     fetchBooks();
@@ -59,6 +65,35 @@ const Catalog = () => {
     }
   };
 
+  const handleBuyClick = (book) => {
+    if (purchasedBooks.includes(book._id)) {
+      window.open(book.fileUrl, '_blank');
+    } else {
+      setSelectedBook(book);
+      setBuyDialogOpen(true);
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setBuyDialogOpen(false);
+    setSelectedBook(null);
+  };
+
+  const handleMakePayment = () => {
+    // Placeholder for payment logic
+    alert('Payment successful! Book purchased.');
+    if (selectedBook) {
+      const updatedPurchased = [...purchasedBooks, selectedBook._id];
+      setPurchasedBooks(updatedPurchased);
+      localStorage.setItem('purchasedBooks', JSON.stringify(updatedPurchased));
+    }
+    handleCloseDialog();
+    // Redirect to the book link after closing dialog
+    if (selectedBook) {
+      window.open(selectedBook.fileUrl, '_blank');
+    }
+  };
+
 
 
   return (
@@ -105,14 +140,25 @@ const Catalog = () => {
                   {book.availableCopies > 0 ? 'Available' : 'Borrowed'}
                 </Typography>
                 <Box sx={{ mt: 2 }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => window.open(book.fileUrl, '_blank')}
-                    disabled={!book.fileUrl}
-                  >
-                    {book.fileType === 'Video' ? 'Watch' : 'Read'}
-                  </Button>
+                  {purchasedBooks.includes(book._id) ? (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => window.open(book.fileUrl, '_blank')}
+                      disabled={!book.fileUrl}
+                    >
+                      Read
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => handleBuyClick(book)}
+                      disabled={!book.fileUrl}
+                    >
+                      Buy
+                    </Button>
+                  )}
                 </Box>
               </CardContent>
 
@@ -120,6 +166,33 @@ const Catalog = () => {
           </Grid>
         ))}
       </Grid>
+      <Dialog open={buyDialogOpen} onClose={handleCloseDialog}>
+        <DialogTitle>Buy Book</DialogTitle>
+        <DialogContent>
+          {selectedBook && (
+            <>
+              <Typography variant="h6">{selectedBook.title}</Typography>
+              <Typography variant="subtitle1" color="textSecondary">
+                by {selectedBook.author}
+              </Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                {selectedBook.description}
+              </Typography>
+              <Typography variant="body1" sx={{ mt: 2, fontWeight: 'bold' }}>
+                Price: ${selectedBook.price || 0}
+              </Typography>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleMakePayment} color="primary" variant="contained">
+            Make a Payment
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

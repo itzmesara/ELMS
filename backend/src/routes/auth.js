@@ -92,10 +92,10 @@ router.get('/me', authenticate, async (req, res) => {
   }
 });
 
-// Get all users (Admin only)
+// Get all users (Admin and Librarian only)
 router.get('/users', authenticate, async (req, res) => {
   try {
-    if (req.user.role !== 'Admin') {
+    if (!['Admin', 'Librarian'].includes(req.user.role)) {
       return res.status(403).json({ message: 'Access denied' });
     }
     const { search } = req.query;

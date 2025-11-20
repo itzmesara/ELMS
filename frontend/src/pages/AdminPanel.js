@@ -83,7 +83,7 @@ const AdminPanel = () => {
 
   const handleOpenDialog = (book = null) => {
     setEditingBook(book);
-    setBookForm(book ? { ...book } : { title: '', author: '', description: '', category: '', year: '', isbn: '', fileUrl: '', fileType: 'PDF', totalCopies: 1, availableCopies: 1 });
+    setBookForm(book ? { ...book } : { title: '', author: '', description: '', category: '', year: '', isbn: '', fileUrl: '', fileType: 'PDF', totalCopies: 1, availableCopies: 1, price: 0 });
     setOpen(true);
   };
 
@@ -480,6 +480,14 @@ const AdminPanel = () => {
             type="number"
             value={bookForm.availableCopies}
             onChange={(e) => setBookForm({ ...bookForm, availableCopies: parseInt(e.target.value) || 1 })}
+          />
+          <TextField
+            margin="dense"
+            label="Price"
+            fullWidth
+            type="number"
+            value={bookForm.price}
+            onChange={(e) => setBookForm({ ...bookForm, price: parseFloat(e.target.value) || 0 })}
           />
         </DialogContent>
         <DialogActions>
